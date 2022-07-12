@@ -14,7 +14,7 @@ export interface Theme {
   /**
    * Class or classes to be applied to targeted element(s) via selector(s)
    */
-  class?: string | string[]
+  class?: string | string[];
   /**
    * Badge color in the theme selector ui
    */
@@ -22,7 +22,7 @@ export interface Theme {
   /**
    * Url of image to display over color swatch on theme selector
    */
-  imageUrl?: string
+  imageUrl?: string;
 }
 
 export interface Parameters {
@@ -70,11 +70,16 @@ export interface Parameters {
    *
    * @default 'contrast'
    */
-  icon?: IconsProps['icon'];
+  icon?: IconsProps["icon"];
   /**
    * A callback that will be executed when the theme changes
    */
   onChange?: (theme?: Theme) => void;
+  /**
+   * A function that if defined it overrides values in global settings for backgrounds
+   * to sync with theme
+   */
+  toBackgroundValue?: (theme?: Theme) => string;
   /**
    * Target element selector(s) to apply class(es)
    * Can pass and empty string to disable dom changes (i.e. `''`)
@@ -97,8 +102,11 @@ export interface ThemeParameter {
  * This is just type omition to somewhat prevent users from defining parameters that
  * could negatively affect the addon behaviour across all stories.
  */
- export interface StoryThemeParameter {
-  theme?: Pick<Parameters, 'default' | 'blurOnSelect' | 'disable' | 'ignoreQueryParams' | 'clearable'>;
+export interface StoryThemeParameter {
+  theme?: Pick<
+    Parameters,
+    "default" | "blurOnSelect" | "disable" | "ignoreQueryParams" | "clearable"
+  >;
 }
 
 export interface ThemeGlobals {

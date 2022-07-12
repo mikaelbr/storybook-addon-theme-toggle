@@ -1,9 +1,9 @@
 import React, { useEffect, useCallback, useState, useRef, FC } from "react";
 import { API, useGlobals, useParameter } from "@storybook/api";
-import { Icons, IconButton, WithTooltip } from '@storybook/components';
+import { Icons, IconButton, WithTooltip } from "@storybook/components";
 
-import { TOOL_ID } from "../constants";
-import { Parameters } from '../types';
+import { BACKGROUNDS_PARAM_KEY, TOOL_ID } from "../constants";
+import { Parameters } from "../types";
 import { Tooltip } from "./Tooltip";
 import { CURRENT_STORY_WAS_SET, SET_STORIES } from "@storybook/core-events";
 
@@ -17,30 +17,44 @@ export const Tool: FC<Props> = ({ api }) => {
   const [expanded, setExpanded] = useState(false);
   const [globals, updateGlobals] = useGlobals();
   const selectedId = globals.theme ? String(globals.theme) : undefined;
-  const themeParams = useParameter<Parameters | null>('theme', null);
+  const themeParams = useParameter<Parameters | null>("theme", null);
 
   const themeParamsRef = useRef(themeParams);
   useEffect(() => {
     themeParamsRef.current = themeParams;
-  }, [themeParams])
+  }, [themeParams]);
 
   const getTheme = useCallback(
-    (themeId?: string) => (themeParams?.themes ?? []).find(({ id }) => id === (themeId ?? selectedId)),
+    (themeId?: string) =>
+      (themeParams?.themes ?? []).find(
+        ({ id }) => id === (themeId ?? selectedId)
+      ),
     [themeParams, selectedId]
   );
 
   const setTheme = useCallback(
     (themeId?: string, forcedUpdate = false) => {
       if (themeId !== selectedId) {
-        const newTheme = getTheme(themeId ?? '');
+        const newTheme = getTheme(themeId ?? "");
         themeParams?.onChange?.(newTheme);
-        updateGlobals({ theme: themeId })
+        updateGlobals({ theme: themeId });
+
+        if (themeParams?.toBackgroundValue) {
+          updateGlobals({
+            [BACKGROUNDS_PARAM_KEY]: {
+              ...globals[BACKGROUNDS_PARAM_KEY],
+              value: themeParams?.toBackgroundValue(newTheme),
+            },
+          });
+        }
       }
 
       // This is needed because storybook `WithTooltip` component does not
       // honor the `tooltipShown` prop to control its visibility
       if (!forcedUpdate && (themeParams?.blurOnSelect ?? true)) {
-        const iconBtn = document.querySelector<HTMLButtonElement>(`#${iconBtnId}`);
+        const iconBtn = document.querySelector<HTMLButtonElement>(
+          `#${iconBtnId}`
+        );
         iconBtn?.click?.();
       }
     },
@@ -49,7 +63,9 @@ export const Tool: FC<Props> = ({ api }) => {
 
   useEffect(() => {
     const setDefaultTheme = () => {
-      const value = themeParamsRef.current?.persist ? selectedId : themeParamsRef.current?.default
+      const value = themeParamsRef.current?.persist
+        ? selectedId
+        : themeParamsRef.current?.default;
       setTheme(value, true);
     };
     api.on(CURRENT_STORY_WAS_SET, setDefaultTheme);
@@ -59,15 +75,18 @@ export const Tool: FC<Props> = ({ api }) => {
   useEffect(() => {
     const setInitialTheme = () => {
       if (themeParamsRef.current && !selectedId) {
-        const themeId = getThemeFromUrl(themeParamsRef.current) ?? themeParamsRef.current?.default;
-        updateGlobals({ theme: themeId })
+        const themeId =
+          getThemeFromUrl(themeParamsRef.current) ??
+          themeParamsRef.current?.default;
+        updateGlobals({ theme: themeId });
       }
     };
     api.on(SET_STORIES, setInitialTheme);
     return () => api.off(SET_STORIES, setInitialTheme);
-  }, [])
+  }, []);
 
-  if (!themeParams || themeParams.disable || themeParams.themes?.length === 0) return null;
+  if (!themeParams || themeParams.disable || themeParams.themes?.length === 0)
+    return null;
 
   const theme = getTheme();
 
@@ -92,7 +111,7 @@ export const Tool: FC<Props> = ({ api }) => {
         title="Select theme"
         onClick={() => setExpanded(true)}
       >
-        <Icons icon={themeParams.icon ?? 'contrast'} />
+        <Icons icon={themeParams.icon ?? "contrast"} />
       </IconButton>
     </WithTooltip>
   );
@@ -106,7 +125,12 @@ function getThemeFromUrl({ themes, ignoreQueryParams }: Parameters) {
   if (ignoreQueryParams ?? true) return null;
 
   const re = /theme:([^;]*)/;
-  const globals = new URL(window.location.toString()).searchParams.get('globals') ?? '';
+  const globals =
+    new URL(window.location.toString()).searchParams.get("globals") ?? "";
   const [, themeId] = re.exec(globals) ?? [];
-  return themes.find(({ id }) => id === themeId) ? themeId : (re.test(globals) ? '' :  null);
+  return themes.find(({ id }) => id === themeId)
+    ? themeId
+    : re.test(globals)
+    ? ""
+    : null;
 }

@@ -17,11 +17,13 @@ As of storybook `6.3.0` global parameters are synced with the url as query searc
 ## Installation
 
 ### yarn
+
 ```sh
 yarn add -D storybook-addon-theme-toggle
 ```
 
 ### npm
+
 ```sh
 npm i -D storybook-addon-theme-toggle
 ```
@@ -33,9 +35,7 @@ Once installed, add this addon to the `addons` array in storybooks `main.js` fil
 ```jsx
 // main.js
 module.exports = {
-  addons: [
-    'storybook-addon-theme-toggle'
-  ],
+  addons: ["storybook-addon-theme-toggle"],
 };
 ```
 
@@ -91,11 +91,16 @@ interface Parameters {
    *
    * @default 'mirror'
    */
-  icon?: IconsProps['icon'];
+  icon?: IconsProps["icon"];
   /**
    * A callback that will be executed when the theme changes
    */
   onChange?: (theme: Theme) => void;
+  /**
+   * A function that if defined it overrides values in global settings for backgrounds
+   * to sync with theme
+   */
+  toBackgroundValue?: (theme?: Theme) => string;
   /**
    * Target element selector(s) to apply class(es)
    *
@@ -122,7 +127,7 @@ interface Theme {
   /**
    * Class or classes to be applied to targeted element(s) via selector(s)
    */
-  class?: string | string[]
+  class?: string | string[];
   /**
    * Badge color in the theme selector ui
    */
@@ -130,7 +135,7 @@ interface Theme {
   /**
    * Url of image to display over color swatch on theme selector
    */
-  imageUrl?: string
+  imageUrl?: string;
 }
 ```
 
@@ -143,7 +148,7 @@ You can configure the themes at the global level in the storybook `preview.(ts|j
 ```tsx
 // preview.ts
 
-import type { ThemeParameter } from 'storybook-addon-theme-toggle';
+import type { ThemeParameter } from "storybook-addon-theme-toggle";
 
 type Parameters = ThemeParameter & {
   // other global parameter types
@@ -151,26 +156,26 @@ type Parameters = ThemeParameter & {
 
 export const parameters: Parameters = {
   theme: {
-    default: 'light',
-    selector: 'body',
+    default: "light",
+    selector: "body",
     onChange(theme) {
       // handle new theme
     },
     themes: [
       {
-        id: 'light',
-        title: 'Light',
-        class: 'light',
-        color: '#fff',
+        id: "light",
+        title: "Light",
+        class: "light",
+        color: "#fff",
       },
       {
-        id: 'dark',
-        title: 'Dark',
-        class: 'dark',
-        color: '#000',
+        id: "dark",
+        title: "Dark",
+        class: "dark",
+        color: "#000",
       },
     ],
-  }
+  },
 };
 ```
 
@@ -204,7 +209,7 @@ Below is a simple example of how you could access the theme via the `context.glo
 import React from "react";
 
 import type { DecoratorFunction } from "@storybook/addons";
-import type { ThemeGlobals } from 'storybook-addon-theme-toggle';
+import type { ThemeGlobals } from "storybook-addon-theme-toggle";
 
 const Decorator: DecoratorFunction<JSX.Element> = (Story, context) => {
   const globals = context.globals as ThemeGlobals;
@@ -227,10 +232,10 @@ export const decorators = [Decorator];
 
 See a full example of this in [`.storybook/Decorator.tsx`](.storybook/Decorator.tsx).
 
-> Globals are currently not correctly initialized by storybook, meaning they *always* return `{}` as the initial value. To correct this, we update globals with the default/initial theme id once the `SET_STORIES` event is emitted, if they differ.
+> Globals are currently not correctly initialized by storybook, meaning they _always_ return `{}` as the initial value. To correct this, we update globals with the default/initial theme id once the `SET_STORIES` event is emitted, if they differ.
 
 ## Framework Support
 
 | [React](https://reactjs.org/) |
-|:-:|
-| :white_check_mark: |
+| :---------------------------: |
+|      :white_check_mark:       |
