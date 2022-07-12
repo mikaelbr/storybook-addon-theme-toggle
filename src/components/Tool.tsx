@@ -80,7 +80,20 @@ export const Tool: FC<Props> = ({ api }) => {
         const themeId =
           getThemeFromUrl(themeParamsRef.current) ??
           themeParamsRef.current?.default;
-        updateGlobals({ theme: themeId });
+
+        const newTheme = getTheme(themeId ?? "");
+
+        if (themeParams?.toBackgroundValue) {
+          updateGlobals({
+            theme: themeId,
+            [BACKGROUNDS_PARAM_KEY]: {
+              ...globals[BACKGROUNDS_PARAM_KEY],
+              value: themeParams?.toBackgroundValue(newTheme),
+            },
+          });
+        } else {
+          updateGlobals({ theme: themeId });
+        }
       }
     };
     api.on(SET_STORIES, setInitialTheme);
