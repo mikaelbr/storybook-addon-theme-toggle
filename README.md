@@ -1,5 +1,8 @@
 # Storybook Addon Theme Toggle
 
+**ARCHIVED. USING https://github.com/tonai/storybook-addon-themes INSTEAD **
+
+
 This addon is inspired by [`@storybook/addon-backgrounds`](https://github.com/storybooks/storybook/tree/next/addons/backgrounds) and [`storybook-addon-themes`](https://github.com/tonai/storybook-addon-themes) and builds a smoother and more feature rich implementation. Also see [`storybook-addon-background-toggle`](https://github.com/nickofthyme/storybook-addon-background-toggle).
 
 This addon can be used to add a custom HTML class(es) to one or many target HTML elements. All options are explained below, see [Parameters](#parameters) section below.
