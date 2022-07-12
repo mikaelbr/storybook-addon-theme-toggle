@@ -37,15 +37,17 @@ export const Tool: FC<Props> = ({ api }) => {
       if (themeId !== selectedId) {
         const newTheme = getTheme(themeId ?? "");
         themeParams?.onChange?.(newTheme);
-        updateGlobals({ theme: themeId });
 
         if (themeParams?.toBackgroundValue) {
           updateGlobals({
+            theme: themeId,
             [BACKGROUNDS_PARAM_KEY]: {
               ...globals[BACKGROUNDS_PARAM_KEY],
               value: themeParams?.toBackgroundValue(newTheme),
             },
           });
+        } else {
+          updateGlobals({ theme: themeId });
         }
       }
 
